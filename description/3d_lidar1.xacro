@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <joint name="laser_joint" type="fixed">
+        <parent link="chassis"/>
+        <child link="laser_frame"/>
+        <origin xyz="0.3 0 0.21" rpy="0 0 0"/>
+    </joint>
+
+    <link name="laser_frame">
+        <visual>
+            <geometry>
+                <cylinder radius="0.05" length="0.04" />
+            </geometry>
+            <material name="white" />
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder radius="0.05" length="0.04" />
+            </geometry>
+        </collision>
+        <xacro:inertial_cylinder mass="0.1" length="0.04" radius="0.05">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </xacro:inertial_cylinder>
+    </link>
+
+    <!-- Gazebo specific configurations for the LiDAR frame -->
+    <gazebo reference="laser_frame">
+        <!-- Material settings -->
+        <material>Gazebo/Orange</material>
+        <!-- Sensor plugin for 3D LiDAR -->
+        <sensor name="lidar_sensor" type="gpu_ray" >
+            <!-- Update rate of the sensor -->
+            <update_rate>10</update_rate>
+            <!-- Pose of the sensor -->
+            <pose>0 0 0 0 0 0</pose>
+            <!-- Visualization settings -->
+            <visualize>true</visualize>
+            <!-- Ray settings for 3D LiDAR -->
+            <ray>
+                <!-- Define vertical scanning parameters -->
+                <vertical>
+                    <!-- Number of vertical samples -->
+                    <samples>16</samples>
+                    <!-- Vertical resolution -->
+                    <resolution>0.02</resolution>
+                    <!-- Minimum and maximum vertical angles -->
+                    <min_angle>-0.7854</min_angle>
+                    <max_angle>0.7854</max_angle>
+                </vertical>
+                <!-- Define horizontal scanning parameters -->
+                <horizontal>
+                    <!-- Number of horizontal samples -->
+                    <samples>270</samples>
+                    <!-- Horizontal resolution -->
+                    <resolution>0.00785398</resolution>
+                    <!-- Minimum and maximum horizontal angles -->
+                    <min_angle>-3.14159265359</min_angle>
+                    <max_angle>3.14159265359</max_angle>
+                </horizontal>
+                <!-- Range settings -->
+                <range>
+                    <!-- Minimum and maximum range -->
+                    <min>0.1</min>
+                    <max>100.0</max>
+                    <!-- Angular resolution -->
+                    <resolution>0.01</resolution>
+                </range>
+            </ray>
+            <!-- Plugin settings -->
+            <plugin name="gazebo_ros_gpu_laser" filename="libgazebo_ros_gpu_laser.so">
+                <!-- ROS parameters -->
+                <ros>
+                    <!-- Topic name for publishing LiDAR data -->
+                    <topicName>/lidar_scan</topicName>
+                    <!-- Frame name -->
+                    <frameName>lidar_frame</frameName>
+                </ros>
+                <!-- Output type -->
+                <output_type>sensor_msgs/LaserScan</output_type>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+</robot>
+
